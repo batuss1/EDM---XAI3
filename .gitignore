@@ -1,0 +1,15 @@
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+__pycache__/
+.ipynb_checkpoints/
+code_unpacked/
+practica_unpacked/
+Pr_cticas/
+*.zip
+data.xml
+EDM-GCD-T5*.pdf
+https___*.URL
+dvc.yaml
