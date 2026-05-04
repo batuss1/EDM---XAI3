@@ -1,4 +1,6 @@
 \documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage[margin=2.4cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -7,14 +9,50 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.7em}
 
-\title{XAI Exercise 5: Model-Agnostic Partial Dependence Plots}
-\author{}
-\date{\today}
-
 \begin{document}
-\maketitle
 
-\section{Objective and Method}
+\pagenumbering{gobble}
+\begin{titlepage}
+\centering
+\vspace*{1.5cm}
+
+{\Large Evaluation, Deployment and Monitoring of Models\par}
+\vspace{1.4cm}
+
+{\large Task: XAI3\par}
+\vspace{0.4cm}
+
+{\LARGE\bfseries Model-Agnostic Methods: Partial Dependence Plots\par}
+\vspace{1.8cm}
+
+{\large\bfseries Authors\par}
+\vspace{0.2cm}
+Jose Miguel García Ríos\par
+Daniel Herrán Gómez-Senent\par
+Batu Senyucel\par
+\vspace{1.4cm}
+
+{\large\bfseries Subject\par}
+\vspace{0.2cm}
+Evaluation, Deployment and Monitoring of Models\par
+\vspace{1.4cm}
+
+{\large\bfseries Date\par}
+\vspace{0.2cm}
+May 4, 2026\par
+
+\vfill
+\end{titlepage}
+
+\clearpage
+\pagenumbering{roman}
+\tableofcontents
+\newpage
+
+\clearpage
+\pagenumbering{arabic}
+
+\section{Introduction}
 
 This report solves Exercise 5 on model-agnostic Partial Dependence Plots (PDP).
 The objective is to fit random forest regression models and use PDPs to interpret
@@ -33,6 +71,21 @@ All random choices use a fixed seed of 42. The PDPs are generated with
 \texttt{scikit-learn}. Random samples are used for the larger house dataset and
 for the bidimensional PDP step, following the warning in the exercise statement.
 
+\section{Data Preparation and Models}
+
+The bike-sharing data contain daily rental counts and weather/calendar variables.
+The original date field is transformed into \texttt{days\_since\_2011}, which is
+the variable requested in the statement. The target is the total number of daily
+rentals, \texttt{cnt}. The variables \texttt{casual} and \texttt{registered} are
+excluded because they sum directly to \texttt{cnt} and would leak the answer.
+
+The house-price data are modelled with the variables requested in the task:
+\texttt{bedrooms}, \texttt{bathrooms}, \texttt{sqft\_living}, \texttt{sqft\_lot},
+\texttt{floors}, and \texttt{yr\_built}. The target is \texttt{price}. Random
+forest regressors are used in both exercises because they provide flexible
+non-linear approximations while remaining compatible with model-agnostic PDP
+analysis.
+
 \begin{table}[H]
 \centering
 \begin{tabular}{lrr}
@@ -46,7 +99,7 @@ House prices & 0.610 & 156,514.67 USD \\
 \caption{Validation metrics for the random forest regressors.}
 \end{table}
 
-\section{1. One-Dimensional PDP for Bike Rentals}
+\section{One-Dimensional PDP for Bike Rentals}
 
 \begin{figure}[H]
 \centering
@@ -73,7 +126,7 @@ cycling.
 The effect is weaker and noisier than temperature or humidity, but the model still
 learns that stronger wind tends to reduce expected rentals.
 
-\section{2. Bidimensional PDP for Humidity and Temperature}
+\section{Bidimensional PDP for Humidity and Temperature}
 
 \begin{figure}[H]
 \centering
@@ -92,7 +145,7 @@ are concentrated. This is important because PDP regions with very few observed
 points should be interpreted cautiously: they represent model extrapolation more
 than strongly supported data behavior.
 
-\section{3. PDP for House Price}
+\section{PDP for House Price}
 
 \begin{figure}[H]
 \centering
@@ -121,6 +174,21 @@ at the largest values, where there are fewer observations.
 bathrooms. The model gives somewhat higher predictions for houses with more
 floors, but the relationship is not as strong or as smooth. This suggests that
 floor count is useful mainly together with other structural variables.
+
+\section{Practical Implications and Limitations}
+
+The PDPs are useful because they turn a random forest into readable marginal
+effects. For bike rentals, the plots can support operational planning: more bikes
+and rebalancing effort are expected to be needed on warm, relatively dry days and
+in the later period of the service. For house prices, the PDPs show that living
+area and bathrooms are stronger price drivers than bedroom count alone.
+
+There are also limitations. PDPs average over the full data distribution, so they
+can hide individual-level differences and interactions. The two-dimensional PDP
+partly solves this for humidity and temperature, but regions with few observed
+points should still be interpreted carefully. Finally, these models are
+predictive and explanatory, not causal: the plots show what the fitted random
+forest learned, not guaranteed causal effects in the real world.
 
 \section{Conclusion}
 
